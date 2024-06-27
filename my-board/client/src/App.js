@@ -1,30 +1,36 @@
 import { useState, useEffect } from 'react'
-
+import axios from 'axios';
+const SERVER_URL = "http://localhost:4000/api/todo"
 function App() {
   const [todoList, setTodoList] = useState([]);
 
-  const fetchData = () => {
-    fetch("http://localhost:4000/api/todo")
-      .then((response) => response.json())
-      .then((data) => setTodoList(data))
+  const fetchData = async () => {
+    const response = await axios.get(SERVER_URL);
+    setTodoList(response.data)
+
+    // fetch("http://localhost:4000/api/todo") 
+    //   .then((response) => response.json())
+    //   .then((data) => setTodoList(data))
   }
 
   useEffect(() => { fetchData() }, []);
 
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
     const text = e.target.text.value;
     const done = e.target.done.checked;
-    fetch("http://localhost:4000/api/todo", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        text,
-        done,
-      }),
-    }).then(() => { fetchData() })
+    await axios.post(SERVER_URL, { text, done });
+    fetchData();
+    // fetch("http://localhost:4000/api/todo", {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     text,
+    //     done,
+    //   }),
+    // }).then(() => { fetchData() })
   }
   return (
     <div className="App">
